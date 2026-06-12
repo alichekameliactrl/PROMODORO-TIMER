@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pomodoro Timer</title>
+
+  <!-- j'importe une belle police depuis google fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- je lie mon fichier css pour le design -->
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+<body>
+
+  <!-- c'est la boite principale qui contient tout -->
+  <div class="carte">
+
+    <!-- les 3 boutons en haut pour choisir le mode -->
+    <!-- quand on clique sur un bouton ca appelle la fonction changerMode() -->
+    <div class="onglets">
+      <button class="onglet actif" id="tabPomodoro" onclick="changerMode('pomodoro')">Pomodoro</button>
+      <button class="onglet" id="tabShort" onclick="changerMode('short')">Short<br>Break</button>
+      <button class="onglet" id="tabLong" onclick="changerMode('long')">Long<br>Break</button>
+    </div>
+
+    <!-- ici s'affiche le temps restant ex: 25:00 -->
+    <!-- le id="temps" sert a modifier ce texte depuis javascript -->
+    <div class="temps" id="temps">25:00</div>
+
+    <!-- le bouton principal pour demarrer ou mettre en pause -->
+    <!-- il change de texte entre START et PAUSE dans le javascript -->
+    <button class="btn-start" id="btnPrincipal" onclick="startPause()">START</button>
+
+    <!-- les 3 petites icones rondes en bas de la carte -->
+    <div class="icones">
+
+      <!-- icone 1 : remet le timer a zero -->
+      <button class="icone-btn" onclick="reset()" title="Reset">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+        </svg>
+      </button>
+
+      <!-- icone 2 : ouvre la fenetre des parametres -->
+      <button class="icone-btn" onclick="ouvrirParametres()" title="Paramètres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+
+      <!-- icone 3 : passe en mode plein ecran -->
+      <button class="icone-btn" onclick="pleinEcran()" title="Plein écran">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"/>
+          <polyline points="9 21 3 21 3 15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/>
+          <line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+      </button>
+
+    </div>
+
+    <!-- barre blanche en bas qui se remplit au fil du temps -->
+    <div class="barre-fond">
+      <div class="barre" id="barre"></div>
+    </div>
+
+  </div>
+
+  <!-- ================================================ -->
+  <!-- FENETRE PARAMETRES                               -->
+  <!-- elle est cachee par defaut                       -->
+  <!-- elle s'affiche quand on clique sur l'icone engrenage -->
+  <!-- ================================================ -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+
+      <h3>⚙️ Paramètres</h3>
+
+      <!-- champ pour changer la duree du pomodoro -->
+      <div class="champ">
+        <label>🍅 Pomodoro (minutes)</label>
+        <input type="number" id="inputPomodoro" min="1" max="60" value="25" />
+      </div>
+
+      <!-- champ pour changer la duree de la pause courte -->
+      <div class="champ">
+        <label>☕ Short Break (minutes)</label>
+        <input type="number" id="inputShort" min="1" max="30" value="5" />
+      </div>
+
+      <!-- champ pour changer la duree de la pause longue -->
+      <div class="champ">
+        <label>🛋️ Long Break (minutes)</label>
+        <input type="number" id="inputLong" min="1" max="60" value="15" />
+      </div>
+
+      <!-- affichage du nombre de pomodoros termines -->
+      <!-- le id="nbSessions" est mis a jour depuis javascript -->
+      <div class="sessions">
+        🏆 Sessions complétées : <strong id="nbSessions">0</strong>
+      </div>
+
+      <!-- les 2 boutons en bas de la fenetre -->
+      <div class="modal-boutons">
+        <!-- annuler ferme la fenetre sans rien changer -->
+        <button class="btn-annuler" onclick="fermerParametres()">Annuler</button>
+        <!-- sauvegarder enregistre les nouvelles durees -->
+        <button class="btn-sauvegarder" onclick="sauvegarder()">Sauvegarder</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- je charge mon fichier javascript a la fin du body -->
+  <!-- important : il faut le mettre apres le html pour que les elements existent deja -->
+  <script src="script.js"></script>
+
+</body>
+</html>
